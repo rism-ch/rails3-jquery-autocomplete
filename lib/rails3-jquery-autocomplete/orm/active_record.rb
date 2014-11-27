@@ -12,7 +12,7 @@ module Rails3JQueryAutocomplete
         model   = parameters[:model]
         term    = parameters[:term]
         options = parameters[:options]
-        method  = options[:hstore] ? options[:hstore][:method] : parameters[:method]
+        method  = options[:hstore] ? options[:hstore][:method] : Array(parameters[:method])
         scopes  = Array(options[:scopes])
         where   = options[:where]
         limit   = get_autocomplete_limit(options)
@@ -33,7 +33,7 @@ module Rails3JQueryAutocomplete
 
       def get_autocomplete_select_clause(model, method, options)
         table_name = model.table_name
-        (["#{table_name}.#{model.primary_key}", "#{table_name}.#{method}"] + (options[:extra_data].blank? ? [] : options[:extra_data]))
+        (["#{table_name}.#{model.primary_key}", "#{table_name}.#{method.first}"] + (options[:extra_data].blank? ? [] : options[:extra_data]))
       end
 
       def get_autocomplete_where_clause(model, term, method, options)
@@ -43,7 +43,12 @@ module Rails3JQueryAutocomplete
         if options[:hstore]
           ["LOWER(#{table_name}.#{method} -> '#{options[:hstore][:key]}') LIKE ?", "#{(is_full_search ? '%' : '')}#{term.downcase}%"]
         else
-          ["LOWER(#{table_name}.#{method}) #{like_clause} ?", "#{(is_full_search ? '%' : '')}#{term.downcase}%"]
+          #["LOWER(#{table_name}.#{method}) #{like_clause} ?", "#{(is_full_search ? '%' : '')}#{term.downcase}%"]
+          rep = [method.map{|m| "LOWER(#{table_name}.#{m}) #{like_clause} ? " }.join('or ')]
+          method.map{|m|
+            rep << "#{(is_full_search ? '%' : '')}#{term.downcase}%"
+          }
+          rep
         end
       end
 

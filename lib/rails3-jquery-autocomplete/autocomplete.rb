@@ -57,7 +57,7 @@ module Rails3JQueryAutocomplete
           method("#{get_prefix(get_object(options[:class_name] || object))}_get_autocomplete_items").call(parameters)
         end
 
-        define_method("autocomplete_#{object}_#{method.first}s") do
+        define_method("autocomplete_#{object}_#{method.first}") do
 
           method = options[:column_name] if options.has_key?(:column_name)
 

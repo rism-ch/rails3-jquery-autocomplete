@@ -44,7 +44,15 @@ module Rails3JQueryAutocomplete
           ["LOWER(#{table_name}.#{method} -> '#{options[:hstore][:key]}') LIKE ?", "#{(is_full_search ? '%' : '')}#{term.downcase}%"]
         else
           #["LOWER(#{table_name}.#{method}) #{like_clause} ?", "#{(is_full_search ? '%' : '')}#{term.downcase}%"]
-          rep = [method.map{|m| "LOWER(#{table_name}.#{m}) #{like_clause} ? " }.join('or ')]
+          
+          # Add a required field to be present in the DB
+          required = ""
+          if options.include?(:required)
+            required = "#{options[:required]} is not null AND"
+          end
+          
+          query = method.map{|m| "LOWER(#{table_name}.#{m}) #{like_clause} ? " }.join('or ')
+          rep = ["#{required}(#{query})"]
           method.map{|m|
             rep << "#{(is_full_search ? '%' : '')}#{term.downcase}%"
           }

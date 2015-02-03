@@ -3,6 +3,7 @@ module Rails3JQueryAutocomplete
     autoload :ActiveRecord , 'rails3-jquery-autocomplete/orm/active_record'
 		autoload :Mongoid      , 'rails3-jquery-autocomplete/orm/mongoid'
 		autoload :MongoMapper  , 'rails3-jquery-autocomplete/orm/mongo_mapper'
-  end
+    autoload :Sunspot      , 'rails3-jquery-autocomplete/orm/sunspot'
+  end 
 end
 

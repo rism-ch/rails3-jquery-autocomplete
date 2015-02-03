@@ -48,6 +48,8 @@ module Rails3JQueryAutocomplete
             'mongoid'
           elsif defined?(MongoMapper::Document) && model.include?(MongoMapper::Document)
             'mongo_mapper'
+          elsif options.include?(:solr) && options[:solr] == true
+            'sunspot'
           else
             'active_record'
           end

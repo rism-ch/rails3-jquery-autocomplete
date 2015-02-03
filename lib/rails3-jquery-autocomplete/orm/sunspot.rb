@@ -15,7 +15,7 @@ module Rails3JQueryAutocomplete
 
       def sunspot_get_autocomplete_items(parameters)
         model          = parameters[:model]
-        method         = parameters[:method]
+        method         = Array(parameters[:method])
         options        = parameters[:options]
         is_full_search = options[:full]
         term           = parameters[:term]
@@ -23,7 +23,9 @@ module Rails3JQueryAutocomplete
         order          = sunspot_get_autocomplete_order(method, options)
 
         s  = model.solr_search do
-          fulltext term
+          fulltext term do
+            fields(method)
+          end
         end
         
         return s.results

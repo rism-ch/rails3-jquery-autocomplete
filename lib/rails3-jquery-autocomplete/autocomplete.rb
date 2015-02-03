@@ -104,7 +104,7 @@ module Rails3JQueryAutocomplete
     def json_for_autocomplete(items, method, extra_data=[])
       items = items.collect do |item|
         if item.is_a?(Array)
-          hash = {"id" => item[:id], "label" => item.[method], "value" => item[method]}
+          hash = {"id" => item[:id], "label" => item[method], "value" => item[method]}
         else
           hash = {"id" => item.id.to_s, "label" => item.send(method), "value" => item.send(method)}
         end

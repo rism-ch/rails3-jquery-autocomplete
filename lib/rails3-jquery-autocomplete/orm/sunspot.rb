@@ -20,15 +20,19 @@ module Rails3JQueryAutocomplete
         is_full_search = options[:full]
         term           = parameters[:term]
         limit          = get_autocomplete_limit(options)
-        order          = sunspot_get_autocomplete_order(method, options)
+        #order          = sunspot_get_autocomplete_order(method, options)
 
         s  = model.solr_search do
           fulltext term do
-            fields(method)
+            fields(method.first)
           end
         end
         
-        return s.results
+        results = s.hits.map do |hit|
+                  # Each element will be a hash containing only the title of the article.
+                  # The title key is used by typeahead.js.
+                  { method.first => hit.stored("740a"), :id => 0 }
+        end
         
       end
     end

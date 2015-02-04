@@ -22,18 +22,36 @@ module Rails3JQueryAutocomplete
         limit          = get_autocomplete_limit(options)
         #order          = sunspot_get_autocomplete_order(method, options)
 
-        s  = model.solr_search do
+        s_total  = model.solr_search do
           fulltext term do
             fields(method.first)
+            highlight(method.first)
           end
         end
         
-        results = s.hits.map do |hit|
-                  # Each element will be a hash containing only the title of the article.
-                  # The title key is used by typeahead.js.
-                  { method.first => hit.stored("740a"), :id => 0 }
+        # Iper dumb hack
+        s  = model.solr_search do
+          fulltext term do
+            fields(method.first)
+            highlight(method.first)
+          end
+          paginate :page => 1, :per_page => s_total.total
         end
         
+        dups = []
+        s.hits.each do |hit|
+          # Each element will be a hash containing only the title of the article.
+          # The title key is used by typeahead.js.
+          #{ method.first => hit.stored("740a"), :id => 0 }
+          #dups = dups | hit.stored(method.first)
+           hit.highlights(method.first).each do |h|
+             dups << h.format { |word| "#{word}" }
+         end
+        end
+        
+        #ap dups.uniq
+        
+        dups.uniq.map{|e| {method.first => e, :id => 0} }
       end
     end
   end

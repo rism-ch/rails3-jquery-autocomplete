@@ -38,26 +38,20 @@ module Rails3JQueryAutocomplete
 
       def get_autocomplete_where_clause(model, term, method, options)
         table_name = model.table_name
-        is_full_search = options[:full]
-        like_clause = (postgres?(model) ? 'ILIKE' : 'LIKE')
-        if options[:hstore]
-          ["LOWER(#{table_name}.#{method} -> '#{options[:hstore][:key]}') LIKE ?", "#{(is_full_search ? '%' : '')}#{term.downcase}%"]
-        else
-          #["LOWER(#{table_name}.#{method}) #{like_clause} ?", "#{(is_full_search ? '%' : '')}#{term.downcase}%"]
-          
-          # Add a required field to be present in the DB
-          required = ""
-          if options.include?(:required)
-            required = "#{options[:required]} is not null AND"
-          end
-          
-          query = method.map{|m| "LOWER(#{table_name}.#{m}) #{like_clause} ? " }.join('or ')
-          rep = ["#{required}(#{query})"]
-          method.map{|m|
-            rep << "#{(is_full_search ? '%' : '')}#{term.downcase}%"
-          }
-          rep
+        # Full search is on by default
+        #is_full_search = options[:full]
+
+        # Add a required field to be present in the DB
+        required = ""
+        if options.include?(:required)
+          required = "#{options[:required]} is not null AND"
         end
+        
+        # Do not use anymore string substitution as it escapes the string
+        query = method.map{|m| "LOWER(#{table_name}.#{m}) REGEXP '.*[[:<:]]#{term.downcase}.*[[:>:]].*' " }.join('or ')
+        rep = ["#{required}(#{query})"]
+        rep
+
       end
 
       def postgres?(model)

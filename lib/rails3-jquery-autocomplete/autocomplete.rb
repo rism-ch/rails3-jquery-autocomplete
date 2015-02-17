@@ -6,7 +6,7 @@ module Rails3JQueryAutocomplete
       target.send :include, Rails3JQueryAutocomplete::Orm::Mongoid if defined?(Mongoid::Document)
       target.send :include, Rails3JQueryAutocomplete::Orm::MongoMapper if defined?(MongoMapper::Document)
       target.send :include, Rails3JQueryAutocomplete::Orm::ActiveRecord
-      target.send :include, Rails3JQueryAutocomplete::Orm::Sunspot
+      target.send :include, Rails3JQueryAutocomplete::Orm::SolrTerms
 
     end
 
@@ -49,7 +49,7 @@ module Rails3JQueryAutocomplete
           elsif defined?(MongoMapper::Document) && model.include?(MongoMapper::Document)
             'mongo_mapper'
           elsif options.include?(:solr) && options[:solr] == true
-            'sunspot'
+            'solr_terms'
           else
             'active_record'
           end

@@ -40,10 +40,10 @@ module Rails3JQueryAutocomplete
     #
     module ClassMethods
       def autocomplete(object, method, options = {}, &block)
-
+        
         method_first =  method.is_a?(Array) ? method.first : method
 
-        define_method("get_prefix") do |model|
+        define_method("get_prefix") do |model, options|
           if defined?(Mongoid::Document) && model.include?(Mongoid::Document)
             'mongoid'
           elsif defined?(MongoMapper::Document) && model.include?(MongoMapper::Document)
@@ -53,13 +53,14 @@ module Rails3JQueryAutocomplete
           else
             'active_record'
           end
+          
         end
         define_method("get_autocomplete_order") do |method, options, model=nil|
           method("#{get_prefix(get_object(options[:class_name] || object))}_get_autocomplete_order").call(method, options, model)
         end
 
         define_method("get_autocomplete_items") do |parameters|
-          method("#{get_prefix(get_object(options[:class_name] || object))}_get_autocomplete_items").call(parameters)
+          method("#{get_prefix(get_object(options[:class_name] || object), parameters[:options])}_get_autocomplete_items").call(parameters)
         end
         
         define_method("autocomplete_#{object}_#{method_first}") do
@@ -67,7 +68,6 @@ module Rails3JQueryAutocomplete
           method = options[:column_name] if options.has_key?(:column_name)
 
           term = params[:term]
-
           if term && !term.blank?
             #allow specifying fully qualified class name for model object
             class_name = options[:class_name] || object

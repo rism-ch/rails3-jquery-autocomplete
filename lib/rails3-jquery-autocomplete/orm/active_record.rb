@@ -46,10 +46,21 @@ module Rails3JQueryAutocomplete
         if options.include?(:required)
           required = "#{options[:required]} is not null AND"
         end
-        
-        # Do not use anymore string substitution as it escapes the string
-        query = method.map{|m| "LOWER(#{table_name}.#{m}) REGEXP '.*[[:<:]]#{term.downcase}.*[[:>:]].*' " }.join('or ')
+       
+        if options.include?(:string_boundary) && options[:string_boundary] == true
+          # Start from the beginning of the string
+          query = method.map{|m| ["LOWER(#{table_name}.#{m}) LIKE (?) "] }.join('or ')
+          search_term = "#{term.downcase}%"
+        else
+          # Search single words in the string
+          # Do not use anymore string substitution as it escapes the string
+          query = method.map{|m| "LOWER(#{table_name}.#{m}) REGEXP (?) " }.join('or ')
+          search_term = ".*[[:<:]]#{term.downcase}.*[[:>:]].*"
+        end
         rep = ["#{required}(#{query})"]
+        ## Important! add all the terms for the query substitution
+        ## one for each time the query was repeated
+        method.each{|m| rep << search_term}
         rep
 
       end

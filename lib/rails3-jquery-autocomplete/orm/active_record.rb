@@ -55,7 +55,8 @@ module Rails3JQueryAutocomplete
           # Search single words in the string
           # Do not use anymore string substitution as it escapes the string
           query = method.map{|m| "LOWER(#{table_name}.#{m}) REGEXP (?) " }.join('or ')
-          search_term = ".*[[:<:]]#{term.downcase}.*[[:>:]].*"
+          term_escaped = term.gsub("(", '\\\(').gsub(")",'\\\)').downcase
+          search_term = ".*[[:<:]]#{term_escaped}.*[[:>:]].*"
         end
         rep = ["#{required}(#{query})"]
         ## Important! add all the terms for the query substitution

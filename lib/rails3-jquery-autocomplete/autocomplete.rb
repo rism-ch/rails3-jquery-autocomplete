@@ -77,7 +77,7 @@ module Rails3JQueryAutocomplete
             items = {}
           end
 
-          render :json => json_for_autocomplete(items, options[:display_value] ||= method_first, options[:extra_data], &block), root: false
+          render :json => json_for_autocomplete(items, options[:display_value] ||= method_first, options[:extra_data], method_first, &block), root: false
         end
       end
     end
@@ -101,12 +101,12 @@ module Rails3JQueryAutocomplete
     # Can be overriden to show whatever you like
     # Hash also includes a key/value pair for each method in extra_data
     #
-    def json_for_autocomplete(items, method, extra_data=[])
+    def json_for_autocomplete(items, method, extra_data=[], default_value)
       items = items.collect do |item|
         if item.is_a?(Hash)
-          hash = {"id" => item[:id], "label" => item[method], "value" => item[method]}
+          hash = {"id" => item[:id], "label" => item[method], "value" => item[default_value]}
         else
-          hash = {"id" => item.id.to_s, "label" => item.send(method), "value" => item.send(method)}
+          hash = {"id" => item.id.to_s, "label" => item.send(method), "value" => item.send(default_value)}
         end
         extra_data.each do |datum|
           hash[datum] = item.send(datum)

@@ -51,7 +51,11 @@ module Rails3JQueryAutocomplete
           # Start from the beginning of the string
           query = method.map{|m| ["LOWER(#{table_name}.#{m}) LIKE (?) "] }.join('or ')
           search_term = "#{term.downcase}%"
-        else
+        elsif options.include?(:exact_match) && options[:exact_match] == true
+          # Search for exact match
+          query = method.map{|m| ["#{table_name}.#{m} = ? "] }.join('or ')
+          search_term = term 
+        elsif
           # Search single words in the string
           # Do not use anymore string substitution as it escapes the string
           query = method.map{|m| "LOWER(#{table_name}.#{m}) REGEXP (?) " }.join('or ')

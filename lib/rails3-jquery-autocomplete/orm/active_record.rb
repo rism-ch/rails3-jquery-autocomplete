@@ -59,15 +59,26 @@ module Rails3JQueryAutocomplete
           # Search single words in the string
           # Do not use anymore string substitution as it escapes the string
           query = method.map{|m| "LOWER(#{table_name}.#{m}) REGEXP (?) " }.join('or ')
-          term_escaped = Regexp.escape(term) #term.gsub("(", '\\\(').gsub(")",'\\\)').downcase
+          term_escaped = Regexp.escape(term)
           search_term = ".*[[:<:]]#{term_escaped}.*[[:>:]].*"
+          # The Regex in some case does not match when an exact term is passed
+          # we need to add a series of ORs for exact matches
+          query_additional = method.map{|m| ["#{table_name}.#{m} = ? "] }.join('or ')
+          search_term_additional = term
         end
-        rep = ["#{required}(#{query})"]
+        if !query_additional
+          rep = ["#{required}(#{query})"]
+        else
+          # make one big query with the OR exact matches
+          rep = ["#{required}(#{query}) OR #{query_additional}"]
+        end
         ## Important! add all the terms for the query substitution
         ## one for each time the query was repeated
         method.each{|m| rep << search_term}
+        # The number of searched terms is the same, so we can iterate again
+        # for the same number of times with the additional term.
+        method.each{|m| rep << search_term_additional} if search_term_additional
         rep
-
       end
 
       def postgres?(model)

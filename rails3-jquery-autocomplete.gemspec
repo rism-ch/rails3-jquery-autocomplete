@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
     s.specification_version = 4
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<rails>, [">= 3.0"])
+      s.add_runtime_dependency(%q<rails>, [">= 4.2"])
       s.add_development_dependency(%q<sqlite3-ruby>, [">= 0"])
       s.add_development_dependency(%q<mongoid>, [">= 2.0.0"])
       s.add_development_dependency(%q<mongo_mapper>, [">= 0.9"])

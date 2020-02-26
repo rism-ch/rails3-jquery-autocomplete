@@ -58,9 +58,11 @@ module Rails3JQueryAutocomplete
         elsif
           # Search single words in the string
           # Do not use anymore string substitution as it escapes the string
-          query = method.map{|m| "LOWER(#{table_name}.#{m}) REGEXP (?) " }.join('or ')
-          term_escaped = Regexp.escape(term)
-          search_term = ".*\\b#{term_escaped}.*\\b.*"
+          ##query = method.map{|m| "LOWER(#{table_name}.#{m}) REGEXP (?) " }.join('or ')
+          ##term_escaped = Regexp.escape(term)
+          ##search_term = ".*\\b#{term_escaped}.*\\b.*"
+          query = method.map{|m| "LOWER(#{table_name}.#{m}) LIKE (?) " }.join('or ')
+          search_term = "%#{term}%"
           # The Regex in some case does not match when an exact term is passed
           # we need to add a series of ORs for exact matches
           query_additional = method.map{|m| ["#{table_name}.#{m} = ? "] }.join('or ')

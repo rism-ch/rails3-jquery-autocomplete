@@ -60,7 +60,7 @@ module Rails3JQueryAutocomplete
           # Do not use anymore string substitution as it escapes the string
           query = method.map{|m| "LOWER(#{table_name}.#{m}) REGEXP (?) " }.join('or ')
           term_escaped = Regexp.escape(term)
-          search_term = ".*[[:<:]]#{term_escaped}.*[[:>:]].*"
+          search_term = ".*\\b#{term_escaped}.*\\b.*"
           # The Regex in some case does not match when an exact term is passed
           # we need to add a series of ORs for exact matches
           query_additional = method.map{|m| ["#{table_name}.#{m} = ? "] }.join('or ')

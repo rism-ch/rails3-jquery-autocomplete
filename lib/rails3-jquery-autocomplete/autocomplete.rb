@@ -84,7 +84,7 @@ module Rails3JQueryAutocomplete
 
     # Returns a limit that will be used on the query
     def get_autocomplete_limit(options)
-      options[:limit] ||= 10
+      options[:limit] ||= 20
     end
 
     # Returns parameter model_sym as a constant

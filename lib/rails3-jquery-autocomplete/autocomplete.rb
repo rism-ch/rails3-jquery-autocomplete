@@ -7,6 +7,7 @@ module Rails3JQueryAutocomplete
       target.send :include, Rails3JQueryAutocomplete::Orm::MongoMapper if defined?(MongoMapper::Document)
       target.send :include, Rails3JQueryAutocomplete::Orm::ActiveRecord
       target.send :include, Rails3JQueryAutocomplete::Orm::SolrTerms
+      target.send :include, Rails3JQueryAutocomplete::Orm::GndAuthorities
 
     end
 
@@ -50,19 +51,23 @@ module Rails3JQueryAutocomplete
             'mongo_mapper'
           elsif options.include?(:solr) && options[:solr] == true
             'solr_terms'
+          elsif options.include?(:gnd) && options[:gnd] == true
+            'gnd_authorities'
           else
             'active_record'
           end
           
         end
+        
         define_method("get_autocomplete_order") do |method, options, model=nil|
           method("#{get_prefix(get_object(options[:class_name] || object))}_get_autocomplete_order").call(method, options, model)
         end
 
         define_method("get_autocomplete_items") do |parameters|
+          ap "#{get_prefix(get_object(options[:class_name] || object), parameters[:options])}_get_autocomplete_items"
           method("#{get_prefix(get_object(options[:class_name] || object), parameters[:options])}_get_autocomplete_items").call(parameters)
         end
-        
+                
         define_method("autocomplete_#{object}_#{method_first}") do
 
           method = options[:column_name] if options.has_key?(:column_name)
@@ -93,7 +98,12 @@ module Rails3JQueryAutocomplete
     #   # returns a Actor constant supposing it is already defined
     #
     def get_object(model_sym)
-      object = model_sym.to_s.camelize.constantize
+      begin
+        object = model_sym.to_s.camelize.constantize
+      rescue NameError
+        # If it is not an object, still continue and don't die
+        object = model_sym.to_s.camelize
+      end
     end
 
     #
@@ -109,7 +119,13 @@ module Rails3JQueryAutocomplete
           hash = {"id" => item.id.to_s, "label" => item.send(method), "value" => item.send(default_value)}
         end
         extra_data.each do |datum|
-          hash[datum] = item.send(datum)
+          # is this a method in the object?
+          if item.respond_to? datum
+            hash[datum] = item.send(datum)
+          else
+            # in this case we assume it is a key to a hash
+            hash[datum] = item[datum.to_s]
+          end
         end if extra_data
         # TODO: Come back to remove this if clause when test suite is better
         hash

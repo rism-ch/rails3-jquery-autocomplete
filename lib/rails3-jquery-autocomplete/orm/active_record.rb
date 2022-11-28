@@ -28,6 +28,8 @@ module Rails3JQueryAutocomplete
             limit(limit).order(order)
         items = items.where(where) unless where.blank?
 
+        ap items
+
         items
       end
 

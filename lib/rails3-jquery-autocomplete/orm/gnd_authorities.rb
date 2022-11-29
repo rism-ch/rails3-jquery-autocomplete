@@ -7,7 +7,7 @@ module Rails3JQueryAutocomplete
 
       def gnd_authorities_get_autocomplete_items(parameters)
         model          = parameters[:model]
-        method         = Array(parameters[:method])
+        method         = parameters[:method]
         options        = parameters[:options]
         #is_full_search = options[:full]
         term           = parameters[:term]

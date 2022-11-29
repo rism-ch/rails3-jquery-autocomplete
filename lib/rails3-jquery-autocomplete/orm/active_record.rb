@@ -27,9 +27,6 @@ module Rails3JQueryAutocomplete
         items = items.where(get_autocomplete_where_clause(model, term, method, options)).
             limit(limit).order(order)
         items = items.where(where) unless where.blank?
-
-        ap items
-
         items
       end
 

@@ -64,7 +64,6 @@ module Rails3JQueryAutocomplete
         end
 
         define_method("get_autocomplete_items") do |parameters|
-          ap "#{get_prefix(get_object(options[:class_name] || object), parameters[:options])}_get_autocomplete_items"
           method("#{get_prefix(get_object(options[:class_name] || object), parameters[:options])}_get_autocomplete_items").call(parameters)
         end
                 

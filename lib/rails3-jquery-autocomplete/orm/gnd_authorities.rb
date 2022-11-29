@@ -14,7 +14,7 @@ module Rails3JQueryAutocomplete
         limit          = get_autocomplete_limit(options)
         #order          = sunspot_get_autocomplete_order(method, options)
         
-        result = GND::Interface.autocomplete(term, method, limit, options)
+        return GND::Interface.autocomplete(term, method, limit, options)
       end
     end
   end

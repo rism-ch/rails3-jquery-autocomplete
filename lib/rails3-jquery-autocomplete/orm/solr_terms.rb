@@ -23,8 +23,9 @@ module Rails3JQueryAutocomplete
         #order          = sunspot_get_autocomplete_order(method, options)
 
         solr = Sunspot.session.get_connection
-        response = solr.get 'terms', :params => {:"terms.fl" => method.first, :"terms.limit" => 30, :"terms.prefix" => term}
+        #response = solr.get 'terms', :params => {:"terms.fl" => method.first, :"terms.limit" => 30, :"terms.prefix" => term}
         
+        response = solr.get 'select', :params => {:"facet.field" => method.first, :"facet.prefix" => term, :"facet" => true, :"q" => "#{method.first}:#{term}*", :"facet.mincount" => "1", :"facet.limit" => 30, :"fl" => "id", :rows => "0"}
         
         # Example response:
         #{
@@ -38,8 +39,12 @@ module Rails3JQueryAutocomplete
         # of subseques values separated by commas to 
         # key/value pairs
         # a,1,b,2 becomes {a => 1, b => 2}
-        found_terms = Hash[*response["terms"][method.first]].keys
+        #found_terms = Hash[*response["terms"][method.first]].keys
         
+        #["facet_counts"]["facet_fields"
+
+        found_terms = Hash[*response["facet_counts"]["facet_fields"][method.first]].keys
+
         # Fake it as a normal DB response
         found_terms.map{|e| {method.first => e, :id => 0} }
       end

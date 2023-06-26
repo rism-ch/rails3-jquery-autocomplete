@@ -25,7 +25,19 @@ module Rails3JQueryAutocomplete
         solr = Sunspot.session.get_connection
         #response = solr.get 'terms', :params => {:"terms.fl" => method.first, :"terms.limit" => 30, :"terms.prefix" => term}
         
-        response = solr.get 'select', :params => {:"facet.field" => method.first, :"facet.prefix" => term, :"facet" => true, :"q" => "#{method.first}:#{term}*", :"facet.mincount" => "1", :"facet.limit" => 30, :"fl" => "id", :rows => "0"}
+        # facet.contains tolerates [], and the other chars are stripped by default
+        #term = term.gsub(/([\[\]\{\}\(\)\+\-\&\|\!\^\~\*\?\:\"\\])/, '\\\\\1')
+        
+        response = solr.get 'select', :params => {
+          :"facet.field" => method.first, 
+          :"facet.contains" => term, 
+          :"facet.contains.ignoreCase" => true,
+          :"facet" => true, 
+          :"q" => "#{method.first}:*", #{term}*", ## NOTE we use facet.contains noew for the catual filtering
+          :"facet.mincount" => "1", 
+          :"facet.limit" => 30, 
+          :"fl" => "id", 
+          :rows => "0"}
         
         # Example response:
         #{

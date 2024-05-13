@@ -18,7 +18,7 @@ module Rails3JQueryAutocomplete
 
         return results.map do |r| 
           label = r.send(:getter_function_autocomplete_label, r)
-          {id: r.id, title: r.title, label: label}
+          {id: r.id, :"#{method}" => r[method], label: label}
         end
       end
     end

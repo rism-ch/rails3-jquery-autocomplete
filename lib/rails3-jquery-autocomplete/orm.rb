@@ -5,6 +5,7 @@ module Rails3JQueryAutocomplete
 		autoload :MongoMapper  , 'rails3-jquery-autocomplete/orm/mongo_mapper'
     autoload :SolrTerms     , 'rails3-jquery-autocomplete/orm/solr_terms'
     autoload :GndAuthorities, 'rails3-jquery-autocomplete/orm/gnd_authorities'
+    autoload :GetterFunction, 'rails3-jquery-autocomplete/orm/getter_function'
   end 
 end
 

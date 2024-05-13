@@ -8,6 +8,7 @@ module Rails3JQueryAutocomplete
       target.send :include, Rails3JQueryAutocomplete::Orm::ActiveRecord
       target.send :include, Rails3JQueryAutocomplete::Orm::SolrTerms
       target.send :include, Rails3JQueryAutocomplete::Orm::GndAuthorities
+      target.send :include, Rails3JQueryAutocomplete::Orm::GetterFunction
 
     end
 
@@ -53,6 +54,8 @@ module Rails3JQueryAutocomplete
             'solr_terms'
           elsif options.include?(:gnd) && options[:gnd] == true
             'gnd_authorities'
+          elsif options.include?(:getter_function)
+            'getter_function'
           else
             'active_record'
           end

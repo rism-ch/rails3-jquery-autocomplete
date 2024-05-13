@@ -54,11 +54,25 @@ module Rails3JQueryAutocomplete
         #found_terms = Hash[*response["terms"][method.first]].keys
         
         #["facet_counts"]["facet_fields"
-
+        
+=begin
+        # This is the old version, which returns only the term
         found_terms = Hash[*response["facet_counts"]["facet_fields"][method.first]].keys
 
         # Fake it as a normal DB response
         found_terms.map{|e| {method.first => e, :id => 0} }
+=end
+        # Trasform the results in a hash, so you get them and hits
+        # 'line 1' => 10
+        items = Hash[*response["facet_counts"]["facet_fields"][method.first]]
+        
+        # Return a label with the hits
+        # This works with :display_value => :label
+        # in the declaration
+        return items.map do |k, v|
+          {id: 0, method.first => k, label: "#{k} (#{v})"}
+        end
+        
       end
     end
   end

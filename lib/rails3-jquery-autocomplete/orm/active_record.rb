@@ -5,7 +5,7 @@ module Rails3JQueryAutocomplete
         order = options[:order]
 
         table_prefix = model ? "#{model.table_name}." : ""
-        order || "LOWER(#{table_prefix}#{method.first}) ASC"
+        order || "#{table_prefix}#{method.first} ASC"
       end
 
       def active_record_get_autocomplete_items(parameters)
@@ -48,7 +48,7 @@ module Rails3JQueryAutocomplete
        
         if options.include?(:string_boundary) && options[:string_boundary] == true
           # Start from the beginning of the string
-          query = method.map{|m| ["LOWER(#{table_name}.#{m}) LIKE (?) "] }.join('or ')
+          query = method.map{|m| ["#{table_name}.#{m} LIKE (?) "] }.join('or ')
           search_term = "#{term.downcase}%"
         elsif options.include?(:exact_match) && options[:exact_match] == true
           # Search for exact match

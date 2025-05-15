@@ -7,6 +7,7 @@ module Rails3JQueryAutocomplete
       target.send :include, Rails3JQueryAutocomplete::Orm::MongoMapper if defined?(MongoMapper::Document)
       target.send :include, Rails3JQueryAutocomplete::Orm::ActiveRecord
       target.send :include, Rails3JQueryAutocomplete::Orm::SolrTerms
+      target.send :include, Rails3JQueryAutocomplete::Orm::SolrSearch
       target.send :include, Rails3JQueryAutocomplete::Orm::GndAuthorities
       target.send :include, Rails3JQueryAutocomplete::Orm::GetterFunction
 
@@ -52,6 +53,8 @@ module Rails3JQueryAutocomplete
             'mongo_mapper'
           elsif options.include?(:solr) && options[:solr] == true
             'solr_terms'
+          elsif options.include?(:solr_search) && options[:solr_search] == true
+            'solr_search'
           elsif options.include?(:gnd) && options[:gnd] == true
             'gnd_authorities'
           elsif options.include?(:getter_function)

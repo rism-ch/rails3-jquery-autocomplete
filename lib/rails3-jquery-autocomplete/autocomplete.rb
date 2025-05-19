@@ -43,7 +43,7 @@ module Rails3JQueryAutocomplete
     #
     module ClassMethods
       def autocomplete(object, method, options = {}, &block)
-        
+
         method_first =  method.is_a?(Array) ? method.first : method
 
         define_method("get_prefix") do |model, options|
@@ -62,9 +62,9 @@ module Rails3JQueryAutocomplete
           else
             'active_record'
           end
-          
+
         end
-        
+
         define_method("get_autocomplete_order") do |method, options, model=nil|
           method("#{get_prefix(get_object(options[:class_name] || object))}_get_autocomplete_order").call(method, options, model)
         end
@@ -72,7 +72,7 @@ module Rails3JQueryAutocomplete
         define_method("get_autocomplete_items") do |parameters|
           method("#{get_prefix(get_object(options[:class_name] || object), parameters[:options])}_get_autocomplete_items").call(parameters)
         end
-                
+
         define_method("autocomplete_#{object}_#{method_first}") do
 
           method = options[:column_name] if options.has_key?(:column_name)
@@ -87,7 +87,7 @@ module Rails3JQueryAutocomplete
             items = {}
           end
 
-          render :json => json_for_autocomplete(items, options[:display_value] ||= method_first, options[:extra_data], method_first, &block), root: false
+          render :json => json_for_autocomplete(items, options[:display_value] ||= method_first, options[:extra_data], options[:value_field] ||= method_first, &block), root: false
         end
       end
     end
@@ -118,6 +118,8 @@ module Rails3JQueryAutocomplete
     #
     def json_for_autocomplete(items, method, extra_data=[], default_value)
       items = items.collect do |item|
+        # Make sure the keys are all symb
+        item = item.transform_keys(&:to_sym)
         if item.is_a?(Hash)
           hash = {"id" => item[:id], "label" => item[method], "value" => item[default_value]}
         else
@@ -129,7 +131,7 @@ module Rails3JQueryAutocomplete
             hash[datum] = item.send(datum)
           else
             # in this case we assume it is a key to a hash
-            hash[datum] = item[datum.to_s]
+            hash[datum] = item[datum]
           end
         end if extra_data
         # TODO: Come back to remove this if clause when test suite is better
@@ -137,10 +139,9 @@ module Rails3JQueryAutocomplete
       end
       if block_given?
         yield(items)
-      else 
+      else
         items
       end
     end
   end
 end
-

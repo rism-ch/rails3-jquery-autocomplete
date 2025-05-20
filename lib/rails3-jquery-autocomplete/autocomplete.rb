@@ -117,9 +117,15 @@ module Rails3JQueryAutocomplete
     # Hash also includes a key/value pair for each method in extra_data
     #
     def json_for_autocomplete(items, method, extra_data=[], default_value)
-      items = items.collect do |item|
+      items = items.collect do |in_item|
+        
         # Make sure the keys are all symb
-        item = item.transform_keys(&:to_sym)
+        if in_item.is_a?(Hash)
+          item = in_item.transform_keys(&:to_sym)
+        else
+          item = in_item.attributes.symbolize_keys
+        end
+        
         if item.is_a?(Hash)
           hash = {"id" => item[:id], "label" => item[method], "value" => item[default_value]}
         else

@@ -25,7 +25,9 @@ module Rails3JQueryAutocomplete
           :"defType" => "edismax",
           :"qf" => "#{search_field}",
           :"fq" => "type:#{model.to_s}",
-          :"sort" => "#{order_field} desc"
+          #:"sort" => "score desc, #{order_field} desc",
+          :"pf" => "#{search_field}^5",
+          :"bf" => "log(#{order_field})^2"
         }
 
         result = response["response"]["docs"].map do |doc_str|

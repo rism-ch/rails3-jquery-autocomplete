@@ -2,15 +2,7 @@ module Rails3JQueryAutocomplete
   module Orm
     module SolrSearch
       def solr_search_get_autocomplete_order(method, options, model=nil)
-        order = options[:order]
-        if order
-          order.split(',').collect do |fields|
-            sfields = fields.split
-            [sfields[0].downcase.to_sym, sfields[1].downcase.to_sym]
-          end
-        else
-          [[method.to_sym, :asc]]
-        end
+       nil
       end
 
       def solr_search_get_autocomplete_items(parameters)
@@ -21,6 +13,8 @@ module Rails3JQueryAutocomplete
         value_field    = options[:value_field]
         display_value  = options[:display_value]
         extra_data     = options[:extra_data]
+        search_field   = options[:search_field]
+        order_field    = options[:order_field]
         term           = parameters[:term]
         limit          = get_autocomplete_limit(options)
         #order          = sunspot_get_autocomplete_order(method, options)
@@ -29,10 +23,9 @@ module Rails3JQueryAutocomplete
         response = solr.get 'select', :params => {
           :"q" => term,
           :"defType" => "edismax",
-          :"qf" => "full_name_autocomplete",
-          #:"fl" => "*+score",
+          :"qf" => "#{search_field}",
           :"fq" => "type:#{model.to_s}",
-          :"sort" => "src_count_order_is desc"
+          :"sort" => "#{order_field} desc"
         }
 
         result = response["response"]["docs"].map do |doc_str|

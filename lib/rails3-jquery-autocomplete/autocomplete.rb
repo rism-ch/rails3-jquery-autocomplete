@@ -118,18 +118,23 @@ module Rails3JQueryAutocomplete
     #
     def json_for_autocomplete(items, method, extra_data=[], default_value)
       items = items.collect do |in_item|
-        
+
         # Make sure the keys are all symb
+        # This will transform in_item into a Hash
         if in_item.is_a?(Hash)
           item = in_item.transform_keys(&:to_sym)
         else
           item = in_item.attributes.symbolize_keys
         end
-        
-        if item.is_a?(Hash)
+
+        # Remember to use the *original* in_item
+        # as item is always hash
+        if in_item.is_a?(Hash)
           hash = {"id" => item[:id], "label" => item[method], "value" => item[default_value]}
         else
-          hash = {"id" => item.id.to_s, "label" => item.send(method), "value" => item.send(default_value)}
+          # if in_item is not a hash (i.e. ActiveRecord obj), we need to use
+          # in_item for the .send() methods
+          hash = {"id" => in_item.id.to_s, "label" => in_item.send(method), "value" => in_item.send(default_value)}
         end
         extra_data.each do |datum|
           # is this a method in the object?

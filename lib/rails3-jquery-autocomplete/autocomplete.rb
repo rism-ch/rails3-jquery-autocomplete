@@ -118,6 +118,14 @@ module Rails3JQueryAutocomplete
     #
     def json_for_autocomplete(items, method, extra_data=[], default_value)
       items = items.collect do |in_item|
+        
+        # Since we force the items to be symbols,
+        # we need to make sure the values we pass
+        # are symbols too!
+        default_value = default_value.to_sym
+        
+        method = method.to_sym
+        extra_data = extra_data.map(&:to_sym) if extra_data
 
         # Make sure the keys are all symb
         # This will transform in_item into a Hash

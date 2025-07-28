@@ -30,14 +30,25 @@ module Rails3JQueryAutocomplete
           :"bf" => "log(#{order_field})^2"
         }
 
-        result = response["response"]["docs"].map do |doc_str|
-          doc = doc_str.transform_keys(&:to_sym)
-          resp = {id: doc[:id_is], value_field => doc[value_field], display_value => doc[display_value]}
-          extra_data.each {|ex| resp[ex] = doc[ex] if doc.include?(ex)}
+        docs = response.dig('response', 'docs') || []
 
-          resp
-        end
-        return result
+        docs.map do |doc|
+          doc = doc.transform_keys(&:to_sym)
+
+          next unless doc[:id_is].present?
+
+          item = {
+            id: doc[:id_is],
+            value_field => doc[value_field],
+            display_value => doc[display_value]
+          }
+
+          extra_data.each do |field|
+            item[field] = doc[field] if doc.key?(field)
+          end
+
+          item
+        end.compact
 
       end
     end

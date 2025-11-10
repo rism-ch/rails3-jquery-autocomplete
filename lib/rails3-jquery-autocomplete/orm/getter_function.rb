@@ -13,14 +13,18 @@ module Rails3JQueryAutocomplete
         term           = parameters[:term]
         limit          = get_autocomplete_limit(options)
         #order          = sunspot_get_autocomplete_order(method, options)
-        
+
         getter_options = options.include?(:getter_options) ? options[:getter_options] : {}
         # Override the method name so we can change the autocomplete name
         record_field = options.include?(:record_field) ? options[:record_field] : method
         results = send(options[:getter_function], term, getter_options)
-        
-        return results.map do |r| 
-          label = r.send(:getter_function_autocomplete_label, r)
+
+        return results.map do |r|
+          if r.respond_to? :getter_function_autocomplete_label
+            label = r.send(:getter_function_autocomplete_label, r)
+          else
+            label = r[record_field]
+          end
           {id: r.id, :"#{method}" => r[record_field], label: label}
         end
       end
